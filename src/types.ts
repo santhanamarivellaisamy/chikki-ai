@@ -45,14 +45,10 @@ export const PROVIDER_CATALOG = [
     borderClass: "border-blue-500/20",
     icon: "G",
     models: [
-      { id: "gemini-2.5-pro",        name: "Gemini 2.5 Pro",         tier: "powerful", ctx: "1M" },
-      { id: "gemini-2.5-flash",      name: "Gemini 2.5 Flash",       tier: "fast",     ctx: "1M" },
-      { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite",  tier: "fast",     ctx: "1M" },
-      { id: "gemini-2.0-flash",      name: "Gemini 2.0 Flash",       tier: "fast",     ctx: "1M" },
-      { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite",  tier: "fast",     ctx: "1M" },
-      { id: "gemini-1.5-pro",        name: "Gemini 1.5 Pro",         tier: "balanced", ctx: "2M" },
-      { id: "gemini-1.5-flash",      name: "Gemini 1.5 Flash",       tier: "fast",     ctx: "1M" },
-      { id: "gemini-1.5-flash-8b",   name: "Gemini 1.5 Flash 8B",    tier: "fast",     ctx: "1M" },
+      { id: "gemini-3.8-flash",        name: "Gemini 3.8 Flash",       tier: "fast",     ctx: "1M" },
+      { id: "gemini-3.1-pro-preview",  name: "Gemini 3.1 Pro",         tier: "powerful", ctx: "2M" },
+      { id: "gemini-3.1-flash-lite",   name: "Gemini 3.1 Flash Lite",  tier: "fast",     ctx: "1M" },
+      { id: "gemini-flash-latest",     name: "Gemini Flash Latest",    tier: "balanced", ctx: "1M" },
     ]
   },
   {

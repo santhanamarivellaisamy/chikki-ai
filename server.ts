@@ -12,14 +12,10 @@ const PROVIDER_ENV_MAP: Record<string, { envKey: string; models: { id: string; n
   gemini: {
     envKey: "GEMINI_API_KEY",
     models: [
-      { id: "gemini-2.5-pro",        name: "Gemini 2.5 Pro" },
-      { id: "gemini-2.5-flash",      name: "Gemini 2.5 Flash" },
-      { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite" },
-      { id: "gemini-2.0-flash",      name: "Gemini 2.0 Flash" },
-      { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite" },
-      { id: "gemini-1.5-pro",        name: "Gemini 1.5 Pro" },
-      { id: "gemini-1.5-flash",      name: "Gemini 1.5 Flash" },
-      { id: "gemini-1.5-flash-8b",   name: "Gemini 1.5 Flash 8B" },
+      { id: "gemini-3.8-flash",        name: "Gemini 3.8 Flash" },
+      { id: "gemini-3.1-pro-preview",  name: "Gemini 3.1 Pro Preview" },
+      { id: "gemini-3.1-flash-lite",   name: "Gemini 3.1 Flash Lite" },
+      { id: "gemini-flash-latest",     name: "Gemini Flash Latest" },
     ],
   },
   claude: {
@@ -115,8 +111,22 @@ function getSimulatedResponse(message: string): string {
   return `I received your message: "${message}". PAB AI is ready to help you optimize your design, draft proposals, or guide your workflow!`;
 }
 
+// ─── Gemini Model Normalizer ─────────────────────────────────────────────
+function normalizeGeminiModel(model?: string): string {
+  if (!model) return "gemini-3.8-flash";
+  const m = model.toLowerCase();
+  if (m.includes("3.1-pro") || m.includes("3-pro")) return "gemini-3.1-pro-preview";
+  if (m.includes("pro")) return "gemini-3.1-pro-preview";
+  if (m.includes("lite")) return "gemini-3.1-flash-lite";
+  if (m === "gemini-flash-latest") return "gemini-flash-latest";
+  if (m === "gemini-3.8-flash") return "gemini-3.8-flash";
+  // Any legacy or unrecognized models (e.g. gemini-2.5-flash, gemini-2.0-flash, gemini-1.5-*)
+  return "gemini-3.8-flash";
+}
+
 // ─── Gemini Chat ─────────────────────────────────────────────────────────────
 async function callGemini(model: string, message: string, history: { sender: string; text: string }[]): Promise<string> {
+  const targetModel = normalizeGeminiModel(model);
   const ai = getGeminiClient();
 
   const contents = [
@@ -128,7 +138,7 @@ async function callGemini(model: string, message: string, history: { sender: str
   ];
 
   const response = await ai.models.generateContent({
-    model,
+    model: targetModel,
     contents,
     config: {
       systemInstruction:
@@ -142,7 +152,7 @@ async function callGemini(model: string, message: string, history: { sender: str
 // ─── Express App ─────────────────────────────────────────────────────────────
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
   app.use(express.json());
 
@@ -154,7 +164,7 @@ async function startServer() {
   // ── /api/ai/chat ── main chat endpoint (matches frontend calls) ──────────
   app.post("/api/ai/chat", async (req, res) => {
     try {
-      const { provider = "gemini", model = "gemini-2.5-flash", message, history = [] } = req.body;
+      const { provider = "gemini", model = "gemini-3.8-flash", message, history = [] } = req.body;
 
       if (!message) {
         return res.status(400).json({ error: "Message is required" });
@@ -207,7 +217,7 @@ async function startServer() {
       }
 
       try {
-        const text = await callGemini("gemini-2.5-flash", message, history || []);
+        const text = await callGemini("gemini-3.8-flash", message, history || []);
         return res.json({ text });
       } catch (innerErr: any) {
         const msg = innerErr?.message || String(innerErr);

@@ -1,6 +1,0 @@
-{
-  "name": "PAB AI",
-  "description": "An elegant, minimalist full-stack AI Assistant featuring secure email onboarding, searchable conversation history, a live Gemini-powered chat thread, and detailed preferences.",
-  "requestFramePermissions": ["microphone"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
